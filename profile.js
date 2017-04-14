@@ -30,11 +30,19 @@ function displayProfile0(req,res,next,succ)
 {
    var userid = req.session.userId;
 
-   var q = "SELECT U.firstName, U.lastName, P.ssn, P.dob, P.address, P.bankAcc, P.bankRouting";
-   q += " FROM User U, Profile P";
-   q += " WHERE U.userId = P.userId AND U.userId = " + userid;
+//    var q = "SELECT U.firstName, U.lastName, P.ssn, P.dob, P.address, P.bankAcc, P.bankRouting";
+//    q += " FROM User U, Profile P";
+//    q += " WHERE U.userId = P.userId AND U.userId = " + userid;
+   
+   var sql = "SELECT U.firstName, U.lastName, P.ssn, P.dob, P.address, P.bankAcc, P.bankRouting";
+   sql += " FROM User U, Profile P";
+   sql += " WHERE U.userId = P.userId AND U.userId = $1";
+   
+   var q = db.query(sql, [userid], function(e1,d1) {
+      displayProfile1(req,res,next,succ,e1,d1);
+   });
 
-   db.query(q,function (e1,d1) { displayProfile1(req,res,next,succ,e1,d1); } );
+   //db.query(q,function (e1,d1) { displayProfile1(req,res,next,succ,e1,d1); } );
 }
 
 
@@ -81,9 +89,15 @@ function handleProfileUpdate(req,res,next)
 
    var userId = req.session.userId;
 
-   var q = "UPDATE User SET firstName = '" + firstname + "', lastName = '" + lastname + "'" +
-      " WHERE userId = " + userId;
-   db.query(q,function (e1,d1) { handleProfileUpdate1(req,res,next,e1,d1); } );
+//    var q = "UPDATE User SET firstName = '" + firstname + "', lastName = '" + lastname + "'" +
+//       " WHERE userId = " + userId;
+   
+   var sql = "UPDATE User SET firstName = $1, lastName = $2 WHERE userId = $3;"
+   var q = db.query(sql, [firstname, lastname, userId], function(e1,d1) {
+      handleProfileUpdate1(req,res,next,e1,d1);
+   });
+   
+   //db.query(q,function (e1,d1) { handleProfileUpdate1(req,res,next,e1,d1); } );
 }
 
 
